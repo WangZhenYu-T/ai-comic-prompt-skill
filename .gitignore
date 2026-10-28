@@ -1,0 +1,29 @@
+# Local secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Local/editor/build noise
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+
+# Local notes, downloaded references, and generated artifacts
+*.log
+*.tmp
+*.bak
+*.zip
+*.7z
+*.rar
+downloads/
+scratch/
+notes-private/

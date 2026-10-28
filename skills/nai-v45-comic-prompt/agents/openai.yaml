@@ -1,0 +1,4 @@
+interface:
+  display_name: "NAI v4.5 漫画 Prompt 助手"
+  short_description: "为 NovelAI Diffusion v4.5 生成分镜对齐的标签与自然语言混合提示词"
+  default_prompt: "使用 NAI v4.5 漫画 Prompt 助手，根据我的分镜、角色设定与场景描述，输出分层的全局场景和各角色 prompt，并在每段后附中文翻译。"
