@@ -1,39 +1,54 @@
 # AI Comic Prompt Skill
 
-An extensible collection of skills for AI-assisted comic production.
+AI Comic Prompt Skill is a model-aware prompt engineering toolkit for AI-assisted comic production. It transforms storyboards, scene descriptions, character references, and existing tag strings into concise prompts that are ready to adapt to an image-generation workflow.
 
-The first release is a pure prompt-writing skill for NovelAI Diffusion V4.5. It converts storyboards, scene descriptions, character references, and existing tag strings into concise, shot-aware prompts organized by global scene and character. It preserves the requested model-specific workflow, prompt ordering, crop-aware detail selection, and Chinese reference translations.
+## NAI v4.5 Prompt Assistant
 
-The repository is designed to grow as separate skills are added under [`skills/`](skills/):
+The current release, [`nai-v45-comic-prompt`](skills/nai-v45-comic-prompt/), is specialized for NovelAI Diffusion V4.5 Full and Curated. It is designed for comic panels and multi-shot sequences where composition, character continuity, and prompt order matter.
 
-- [`skills/nai-v45-comic-prompt/`](skills/nai-v45-comic-prompt/): current NovelAI Diffusion V4.5 prompt assistant.
-- A future ComfyUI MCP skill: allow an agent to pass approved prompts into ComfyUI, run workflows, inspect results, and iterate on generations.
-- Future production-tool skills: connect the agent to Photoshop or other image-editing and manga-layout tools for cleanup, lettering, panel composition, and final export.
+### Core capabilities
 
-The long-term direction is an agent-driven, one-stop AI comic production workflow. Each model or production tool can remain an independent skill with its own instructions and integration boundary, while later orchestration skills coordinate them.
+- Convert natural-language shot descriptions and supplied tag strings into compact mixed tag-and-language prompts.
+- Separate each output into a global scene prompt and one prompt per visible character.
+- Encode camera distance, framing, angle, viewpoint, subject placement, visible props, lighting, and interactions.
+- Track visible clothing, accessories, hairstyle, facial expression, gaze, pose, action, and character-to-scene interactions.
+- Rebuild prompts for every shot instead of copying a fixed character block across changing camera crops.
+- Remove details that fall outside the current crop, such as lower-body details in an upper-body close-up.
+- Prioritize composition-critical information according to NAI prompt-order behavior and remove redundant phrasing.
+- Prefer established Danbooru-style tags while reserving short natural language for precise relationships and staging.
+- Keep artist strings and quality boilerplate outside the copyable prompt output.
+- Provide a Chinese reference translation below each English prompt block.
+- Run a structured self-check for model target, crop alignment, composition, interactions, ordering, and redundancy.
 
-## Current scope
+## Typical workflow
 
-Version 1 is intentionally limited to prompt writing. It does not call image-generation APIs, operate ComfyUI, edit image metadata, control Photoshop, or automate clipboard actions.
+Provide any combination of:
 
-The current skill targets NovelAI Diffusion V4.5 Full and Curated. Other model-specific prompt skills can be added as separate subdirectories rather than changing the V4.5 skill's contract.
+- a storyboard or shot description;
+- character baseline tags or prompt fragments;
+- existing prompt strings to preserve or revise;
+- previous and following shots for continuity;
+- the requested model and generation mode when it differs from NAI v4.5.
 
-## Roadmap
+The assistant first identifies the facts visible in the current shot, then builds a shot-specific prompt inventory. The final response presents copyable prompt blocks for the scene and each character, followed by Chinese reference translations and a self-check. A continuity base can be maintained internally across a sequence and revised for each individual shot.
 
-- **v1:** pure NovelAI V4.5 prompt-writing skill.
-- **v2:** optional MUV-style front-end constraints and structured prompt validation for more consistent inputs and outputs.
-- **Later:** ComfyUI MCP execution, result inspection and iteration, Photoshop or image-editing integration, manga panel layout, lettering, and end-to-end orchestration.
+## Scope
 
-## Skill layout
+Version 1 is a pure prompt-writing skill. It does not operate ComfyUI, call image-generation APIs, edit image metadata, control Photoshop, or automate clipboard actions. Model-specific prompt rules remain isolated so that future skills can support other checkpoints and platforms without changing the NAI v4.5 contract.
 
-Each skill should be self-contained:
+## Installation
+
+Use the self-contained skill directory with an agent runtime that supports skills:
 
 ```text
-skills/
-└── <skill-name>/
-    ├── SKILL.md
-    ├── agents/openai.yaml
-    └── references/
+skills/nai-v45-comic-prompt/
+├── SKILL.md
+├── agents/openai.yaml
+└── references/model-notes.md
 ```
 
-Keep model-specific rules and tool-specific integration instructions in their own subdirectories. Shared orchestration should be introduced only when the related skills and MCP interfaces are ready.
+Copy `skills/nai-v45-comic-prompt/` into the runtime's skill directory, or load the directory according to the runtime's skill configuration. No API key, image service credential, or ComfyUI connection is required for the current release.
+
+## Repository direction
+
+Additional model and production-tool skills will be added as independent directories. Planned extensions include optional MUV-style structured input constraints, ComfyUI MCP execution and result iteration, and integrations for image editing and manga layout. These are future extensions; the current release remains focused on reliable NAI v4.5 prompt construction.
